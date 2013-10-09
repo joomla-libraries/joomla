@@ -11,30 +11,46 @@ defined('JPATH_PLATFORM') or die;
 
 /**
  * Form Field class for the Joomla Platform.
- * Provides an input field for files
+ * Provides a one line text box with up-down handles to set a number in the field.
  *
  * @package     Joomla.Platform
  * @subpackage  Form
- * @link        http://www.w3.org/TR/html-markup/input.file.html#input.file
- * @since       11.1
+ * @link        http://www.w3.org/TR/html-markup/input.text.html#input.text
+ * @since       3.2
  */
-class JFormFieldFile extends JFormField
+class JFormFieldNumber extends JFormField
 {
 	/**
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  11.1
-	 */
-	protected $type = 'File';
-
-	/**
-	 * The accepted file type list.
-	 *
-	 * @var    mixed
 	 * @since  3.2
 	 */
-	protected $accept;
+	protected $type = 'Number';
+
+	/**
+	 * The allowable maximum value of the field.
+	 *
+	 * @var    float
+	 * @since  3.2
+	 */
+	protected $max = 0;
+
+	/**
+	 * The allowable minimum value of the field.
+	 *
+	 * @var    float
+	 * @since  3.2
+	 */
+	protected $min = 0;
+
+	/**
+	 * The step by which value of the field increased or decreased.
+	 *
+	 * @var    float
+	 * @since  3.2
+	 */
+	protected $step = 0;
 
 	/**
 	 * Method to get certain otherwise inaccessible properties from the form field object.
@@ -49,7 +65,9 @@ class JFormFieldFile extends JFormField
 	{
 		switch ($name)
 		{
-			case 'accept':
+			case 'max':
+			case 'min':
+			case 'step':
 				return $this->$name;
 		}
 
@@ -70,8 +88,10 @@ class JFormFieldFile extends JFormField
 	{
 		switch ($name)
 		{
-			case 'accept':
-				$this->$accept = (string) $value;
+			case 'step':
+			case 'min':
+			case 'max':
+				$this->$name = (float) $value;
 				break;
 
 			default:
@@ -95,41 +115,53 @@ class JFormFieldFile extends JFormField
 	 */
 	public function setup(SimpleXMLElement $element, $value, $group = null)
 	{
-		$this->accept = (string) $element['accept'];
+		$this->max  = isset($element['max']) ? (float) $element['max'] : 100;
+		$this->min  = isset($element['min']) ? (float) $element['min'] : 0;
+		$this->step = isset($element['step']) ? (float) $element['step'] : 1;
 
 		return parent::setup($element, $value, $group);
 	}
 
 	/**
-	 * Method to get the field input markup for the file field.
-	 * Field attributes allow specification of a maximum file size and a string
-	 * of accepted file extensions.
+	 * Method to get the field input markup.
 	 *
 	 * @return  string  The field input markup.
 	 *
-	 * @note    The field does not include an upload mechanism.
-	 * @see     JFormFieldMedia
-	 * @since   11.1
+	 * @since   3.2
 	 */
 	protected function getInput()
 	{
+		// Translate placeholder text
+		$hint = $this->translateHint ? JText::_($this->hint) : $this->hint;
+
 		// Initialize some field attributes.
-		$accept    = !empty($this->accept) ? ' accept="' . $this->accept . '"' : '';
-		$size      = !empty($this->size) ? ' size="' . $this->size . '"' : '';
-		$class     = !empty($this->class) ? ' class="' . $this->class . '"' : '';
-		$disabled  = $this->disabled ? ' disabled' : '';
-		$required  = $this->required ? ' required aria-required="true"' : '';
+		$size     = !empty($this->size) ? ' size="' . $this->size . '"' : '';
+		$max      = !empty($this->max) ? ' max="' . $this->max . '"' : '';
+		$min      = !empty($this->min) ? ' min="' . $this->min . '"' : '';
+		$step     = !empty($this->step) ? ' step="' . $this->step . '"' : '';
+		$class    = !empty($this->class) ? ' class="' . $this->class . '"' : '';
+		$readonly = $this->readonly ? ' readonly' : '';
+		$disabled = $this->disabled ? ' disabled' : '';
+		$required = $this->required ? ' required aria-required="true"' : '';
+		$hint     = $hint ? ' placeholder="' . $hint . '"' : '';
+
+		$autocomplete = !$this->autocomplete ? ' autocomplete="off"' : ' autocomplete="' . $this->autocomplete . '"';
+		$autocomplete = $autocomplete == ' autocomplete="on"' ? '' : $autocomplete;
+
 		$autofocus = $this->autofocus ? ' autofocus' : '';
-		$multiple  = $this->multiple ? ' multiple' : '';
+
+		$value = (float) $this->value;
+		$value = empty($value) ? $this->min : $value;
 
 		// Initialize JavaScript field attributes.
-		$onchange = $this->onchange ? ' onchange="' . $this->onchange . '"' : '';
+		$onchange = !empty($this->onchange) ? ' onchange="' . $this->onchange . '"' : '';
 
 		// Including fallback code for HTML5 non supported browsers.
 		JHtml::_('jquery.framework');
 		JHtml::_('script', 'system/html5fallback.js', false, true);
 
-		return '<input type="file" name="' . $this->name . '" id="' . $this->id . '" value=""' . $accept
-			. $disabled . $class . $size . $onchange . $required . $autofocus . $multiple . ' />';
+		return '<input type="number" name="' . $this->name . '" id="' . $this->id . '"' . ' value="'
+			. htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '"' . $class . $size . $disabled . $readonly
+			. $hint . $onchange . $max . $step . $min . $required . $autocomplete . $autofocus . ' />';
 	}
 }
