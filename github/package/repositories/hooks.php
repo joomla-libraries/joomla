@@ -3,7 +3,7 @@
  * @package     Joomla.Platform
  * @subpackage  GitHub
  *
- * @copyright   Copyright (C) 2005 - 2014 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -12,11 +12,13 @@ defined('JPATH_PLATFORM') or die;
 /**
  * GitHub API Hooks class for the Joomla Platform.
  *
+ * @documentation http://developer.github.com/v3/repos/hooks
+ *
  * @package     Joomla.Platform
- * @subpackage  GitHub
+ * @subpackage  GitHub.Repositories
  * @since       12.3
  */
-class JGithubHooks extends JGithubObject
+class JGithubPackageRepositoriesHooks extends JGithubPackage
 {
 	/**
 	 * Array containing the allowed hook events
@@ -25,8 +27,8 @@ class JGithubHooks extends JGithubObject
 	 * @since  12.3
 	 */
 	protected $events = array(
-						'push', 'issues', 'issue_comment', 'commit_comment', 'pull_request', 'gollum', 'watch', 'download', 'fork', 'fork_apply',
-						'member', 'public', 'status'
+		'push', 'issues', 'issue_comment', 'commit_comment', 'pull_request', 'gollum', 'watch', 'download', 'fork', 'fork_apply',
+		'member', 'public', 'status'
 	);
 
 	/**
@@ -39,15 +41,13 @@ class JGithubHooks extends JGithubObject
 	 * @param   array    $events  The events the hook will be triggered for.
 	 * @param   boolean  $active  Flag to determine if the hook is active
 	 *
-	 * @deprecated  use repositories->hooks->create()
-	 *
 	 * @return  object
 	 *
 	 * @since   12.3
 	 * @throws  DomainException
 	 * @throws  RuntimeException
 	 */
-	public function create($user, $repo, $name, array $config, array $events = array('push'), $active = true)
+	public function create($user, $repo, $name, $config, array $events = array('push'), $active = true)
 	{
 		// Build the request path.
 		$path = '/repos/' . $user . '/' . $repo . '/hooks';
@@ -78,8 +78,6 @@ class JGithubHooks extends JGithubObject
 	 * @param   string   $repo  The name of the GitHub repository.
 	 * @param   integer  $id    ID of the hook to delete.
 	 *
-	 * @deprecated  use repositories->hooks->delete()
-	 *
 	 * @return  object
 	 *
 	 * @since   12.3
@@ -109,15 +107,13 @@ class JGithubHooks extends JGithubObject
 	 * @param   array    $removeEvents  Events to remove from the hook.
 	 * @param   boolean  $active        Flag to determine if the hook is active
 	 *
-	 * @deprecated  use repositories->hooks->edit()
-	 *
 	 * @return  object
 	 *
 	 * @since   12.3
 	 * @throws  DomainException
 	 * @throws  RuntimeException
 	 */
-	public function edit($user, $repo, $id, $name, array $config, array $events = array('push'), array $addEvents = array(),
+	public function edit($user, $repo, $id, $name, $config, array $events = array('push'), array $addEvents = array(),
 		array $removeEvents = array(), $active = true)
 	{
 		// Check to ensure all events are in the allowed list
@@ -150,12 +146,12 @@ class JGithubHooks extends JGithubObject
 
 		$data = json_encode(
 			array(
-				'name' => $name,
-				'config' => $config,
-				'events' => $events,
-				'add_events' => $addEvents,
+				'name'          => $name,
+				'config'        => $config,
+				'events'        => $events,
+				'add_events'    => $addEvents,
 				'remove_events' => $removeEvents,
-				'active' => $active)
+				'active'        => $active)
 		);
 
 		return $this->processResponse(
@@ -169,8 +165,6 @@ class JGithubHooks extends JGithubObject
 	 * @param   string   $user  The name of the owner of the GitHub repository.
 	 * @param   string   $repo  The name of the GitHub repository.
 	 * @param   integer  $id    ID of the hook to retrieve
-	 *
-	 * @deprecated  use repositories->hooks->get()
 	 *
 	 * @return  object
 	 *
@@ -190,19 +184,15 @@ class JGithubHooks extends JGithubObject
 	/**
 	 * Method to list hooks for a repository.
 	 *
-	 * @param   string   $user   The name of the owner of the GitHub repository.
-	 * @param   string   $repo   The name of the GitHub repository.
-	 * @param   integer  $page   Page to request
-	 * @param   integer  $limit  Number of results to return per page
-	 *
-	 * @deprecated  use repositories->hooks->getList()
+	 * @param   string  $user  The name of the owner of the GitHub repository.
+	 * @param   string  $repo  The name of the GitHub repository.
 	 *
 	 * @return  object
 	 *
 	 * @since   12.3
 	 * @throws  DomainException
 	 */
-	public function getList($user, $repo, $page = 0, $limit = 0)
+	public function getList($user, $repo)
 	{
 		// Build the request path.
 		$path = '/repos/' . $user . '/' . $repo . '/hooks';
@@ -218,8 +208,6 @@ class JGithubHooks extends JGithubObject
 	 * @param   string   $user  The name of the owner of the GitHub repository.
 	 * @param   string   $repo  The name of the GitHub repository.
 	 * @param   integer  $id    ID of the hook to delete
-	 *
-	 * @deprecated  use repositories->hooks->test()
 	 *
 	 * @return  object
 	 *

@@ -3,7 +3,7 @@
  * @package     Joomla.Platform
  * @subpackage  GitHub
  *
- * @copyright   Copyright (C) 2005 - 2014 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -12,11 +12,13 @@ defined('JPATH_PLATFORM') or die;
 /**
  * GitHub API Milestones class for the Joomla Platform.
  *
+ * @documentation http://developer.github.com/v3/issues/milestones/
+ *
  * @package     Joomla.Platform
- * @subpackage  GitHub
+ * @subpackage  GitHub.Issues
  * @since       12.3
  */
-class JGithubMilestones extends JGithubObject
+class JGithubPackageIssuesMilestones extends JGithubPackage
 {
 	/**
 	 * Method to get the list of milestones for a repo.
@@ -29,11 +31,10 @@ class JGithubMilestones extends JGithubObject
 	 * @param   integer  $page       The page number from which to get items.
 	 * @param   integer  $limit      The number of items on a page.
 	 *
-	 * @deprecated  use issues->milestones->getList()
+	 * @throws DomainException
+	 * @since   12.3
 	 *
 	 * @return  array
-	 *
-	 * @since   12.3
 	 */
 	public function getList($user, $repo, $state = 'open', $sort = 'due_date', $direction = 'desc', $page = 0, $limit = 0)
 	{
@@ -65,8 +66,7 @@ class JGithubMilestones extends JGithubObject
 	 * @param   string   $repo         The name of the GitHub repository.
 	 * @param   integer  $milestoneId  The milestone id to get.
 	 *
-	 * @deprecated  use issues->milestones->get()
-	 *
+	 * @throws DomainException
 	 * @return  object
 	 *
 	 * @since   12.3
@@ -100,8 +100,7 @@ class JGithubMilestones extends JGithubObject
 	 * @param   string   $description  Optional description for milestone.
 	 * @param   string   $due_on       Optional ISO 8601 time.
 	 *
-	 * @deprecated  use issues->milestones->create()
-	 *
+	 * @throws DomainException
 	 * @return  object
 	 *
 	 * @since   12.3
@@ -158,8 +157,7 @@ class JGithubMilestones extends JGithubObject
 	 * @param   string   $description  Optional description for milestone.
 	 * @param   string   $due_on       Optional ISO 8601 time.
 	 *
-	 * @deprecated  use issues->milestones->edit()
-	 *
+	 * @throws DomainException
 	 * @return  object
 	 *
 	 * @since   12.3
@@ -215,8 +213,7 @@ class JGithubMilestones extends JGithubObject
 	 * @param   string   $repo         The name of the GitHub repository.
 	 * @param   integer  $milestoneId  The id of the milestone to delete.
 	 *
-	 * @deprecated  use issues->milestones->delete()
-	 *
+	 * @throws DomainException
 	 * @return  void
 	 *
 	 * @since   12.3

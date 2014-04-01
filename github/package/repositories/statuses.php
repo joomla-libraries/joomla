@@ -3,7 +3,7 @@
  * @package     Joomla.Platform
  * @subpackage  GitHub
  *
- * @copyright   Copyright (C) 2005 - 2014 Open Source Matters, Inc. All rights reserved.
+ * @copyright   Copyright (C) 2005 - 2012 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
@@ -12,11 +12,13 @@ defined('JPATH_PLATFORM') or die;
 /**
  * GitHub API References class for the Joomla Platform.
  *
+ * @documentation http://developer.github.com/v3/repos/statuses
+ *
  * @package     Joomla.Platform
- * @subpackage  GitHub
+ * @subpackage  GitHub.Repositories
  * @since       12.3
  */
-class JGithubStatuses extends JGithubObject
+class JGithubPackageRepositoriesStatuses extends JGithubPackage
 {
 	/**
 	 * Method to create a status.
@@ -28,11 +30,12 @@ class JGithubStatuses extends JGithubObject
 	 * @param   string  $targetUrl    Optional target URL.
 	 * @param   string  $description  Optional description for the status.
 	 *
-	 * @deprecated  use repositories->statuses->create()
-	 *
-	 * @return  object
+	 * @throws InvalidArgumentException
+	 * @throws DomainException
 	 *
 	 * @since   12.3
+	 *
+	 * @return  object
 	 */
 	public function create($user, $repo, $sha, $state, $targetUrl = null, $description = null)
 	{
@@ -79,8 +82,6 @@ class JGithubStatuses extends JGithubObject
 	 * @param   string  $user  The name of the owner of the GitHub repository.
 	 * @param   string  $repo  The name of the GitHub repository.
 	 * @param   string  $sha   SHA1 for which to get the statuses.
-	 *
-	 * @deprecated  use repositories->statuses->getList()
 	 *
 	 * @return  array
 	 *
