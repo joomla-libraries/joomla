@@ -54,7 +54,7 @@ abstract class JApplicationBase
 	 */
 	public function close($code = 0)
 	{
-		exit($code);
+		throw new \Exception("Redirection", $code);
 	}
 
 	/**
